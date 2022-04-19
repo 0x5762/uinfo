@@ -74,6 +74,20 @@ def probe_res_text(domain):
             title = select_obj if select_obj else 'None'
             print('[*] 状态码： {},响应长度：{:.2f}KB,title：{},内容类型：{},Server：{}\n'.format(res.status_code,(float(res_length)/1024),title,res_content_type,res_server))
             sign_list.append(content)
+            
+        comm_url = domain+random_strs
+        headers.update({'Referer':comm_url})
+        print('[*] 生成随机URL3 {}\n'.format(comm_url))
+        with httpx.Client(headers=headers,verify = False,follow_redirects = True) as client:
+            res = client.get(comm_url)
+            content = res.text
+            res_length = res.headers.get('content-length') if res.headers.get('content-length') else len(content)
+            res_content_type = res.headers.get('content-type') if res.headers.get('content-type') else 'None'
+            res_server = res.headers.get('server') if res.headers.get('server') else 'None'
+            select_obj = Selector(text=content).xpath('//title/text()').get()
+            title = select_obj if select_obj else 'None'
+            print('[*] 状态码： {},响应长度：{:.2f}KB,title：{},内容类型：{},Server：{}\n'.format(res.status_code,(float(res_length)/1024),title,res_content_type,res_server))
+            sign_list.append(content)
         return sign_list
     except:
         pass
